@@ -17,13 +17,14 @@ Create a `config.json` file in the root of the project. You can use the included
 Create a Discord bot and invite it to a server. Explaining how to do this is beyond the scope of this README, but [this](https://discordpy.readthedocs.io/en/latest/discord.html) is a great guide.
 
 Create a `.env` file and include the following line, replacing `YOUR_BOT_TOKEN` with... your bot's token:
+
 ```dotenv
 DISCORD_BOT_TOKEN=YOUR_BOT_TOKEN
 ```
 
 ## Usage
 
-* Run `yarn start`
+To start both the API and Discord server run `yarn start`. The Discord server will message the user set as the admin once it's up.
 
 ## Troubleshooting
 
