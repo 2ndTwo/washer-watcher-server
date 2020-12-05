@@ -1,5 +1,6 @@
 const fs = require("fs");
 const moment = require("moment");
+const { cloneDeep } = require("lodash");
 
 const { logInfo, logError } = require("./utilities");
 const { cycleFinishedMessage } = require("./discord-api");
@@ -15,6 +16,11 @@ function initState() {
     let usersState = {};
 
     for (const user of config.users) {
+      console.log(
+        moment
+          .duration(config.default_reminder_duration, "minutes")
+          .asMilliseconds()
+      );
       usersState[user.name] = {
         washer_durations: [], // In ms
         dryer_durations: [], // In ms
@@ -49,14 +55,15 @@ function initState() {
 }
 
 function saveState(data) {
-  if (Object.prototype.hasOwnProperty.call(data, "discord_client")) {
-    delete data.discord_client;
+  const dataCopy = cloneDeep(data);
+  if (Object.prototype.hasOwnProperty.call(dataCopy, "discord_client")) {
+    delete dataCopy.discord_client;
   }
 
-  fs.writeFile("./state.json", JSON.stringify(data), (err) => {
+  fs.writeFile("./state.json", JSON.stringify(dataCopy), (err) => {
     if (err) {
       logError("Issue saving state.json:\n" + err);
-      logInfo("Current state data:\n" + data);
+      logInfo("Current state data:\n" + dataCopy);
     }
   });
 }
