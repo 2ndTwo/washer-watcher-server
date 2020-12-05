@@ -2,6 +2,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 const { logInfo, logError } = require("./utilities");
+const config = require("./config.json");
 
 function initState() {
   let state = {};
@@ -52,8 +53,10 @@ function saveState(data) {
       logInfo("Current state data:\n" + data);
     }
   });
-}
 
+  console.log("The state has been saved:\n");
+  console.log(data);
+}
 function loadState() {
   const rawStateFileData = fs.readFileSync("./state.json");
   return JSON.parse(rawStateFileData);
@@ -63,8 +66,30 @@ function getState() {
   return state;
 }
 
+function changeMachineStatus(machine, status) {
+  if (!["dryer", "washer"].includes(machine)) return -1;
+  if (!["empty", "running", "full"].includes(status)) return -2;
+
+  state[machine].status = status;
+  saveState(state);
+
+  return 0;
+}
+function changeMachineUser(machine, userName) {
+  if (!["dryer", "washer"].includes(machine)) return -1;
+  if (config.users.find((user) => user.name === userName) === undefined)
+    return -2;
+
+  state[machine].user = userName;
+  saveState(state);
+
+  return 0;
+}
+
 let state = initState();
 
 module.exports = {
   getState,
+  changeMachineStatus,
+  changeMachineUser,
 };

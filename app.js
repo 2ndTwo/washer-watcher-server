@@ -35,6 +35,7 @@ client.login(config.discord_bot_token);
 
 const app = express();
 
+app.use(express.urlencoded({ extended: true }));
 app.use(router);
 
 app.listen(config.api_port, () => {
