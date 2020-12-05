@@ -1,6 +1,12 @@
 const config = require("./config.json");
 
-function sendAdminMessage(message, discordClient) {
+let discordClient;
+
+function addDiscordClient(client) {
+  discordClient = client;
+}
+
+function sendAdminMessage(message) {
   const adminUser = config.users.find((user) => user.is_admin === true);
   const adminUserId = adminUser.discord_id;
 
@@ -16,22 +22,18 @@ function sendAdminMessage(message, discordClient) {
     .catch((err) => console.error(err));
 }
 
-function logInfo(message, discordClient) {
+function logInfo(message) {
   console.info(message);
-
-  if (discordClient) {
-    sendAdminMessage("ℹ " + message, discordClient);
-  }
+  sendAdminMessage("ℹ " + message);
 }
 
-function logError(message, discordClient) {
+function logError(message) {
   console.error(message);
-  if (discordClient) {
-    sendAdminMessage("🛑 " + message, discordClient);
-  }
+  sendAdminMessage("🛑 " + message);
 }
 
 module.exports = {
   logInfo,
   logError,
+  addDiscordClient,
 };

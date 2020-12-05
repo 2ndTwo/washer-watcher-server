@@ -2,6 +2,7 @@ const fs = require("fs");
 const Discord = require("discord.js");
 const express = require("express");
 
+const utilities = require("./utilities");
 const discordApi = require("./discord-api");
 const router = require("./server-api");
 const state = require("./state-manager");
@@ -12,6 +13,7 @@ const config = require("./config.json");
 
 const client = new Discord.Client();
 state.addDiscordClient(client);
+utilities.addDiscordClient(client);
 client.commands = new Discord.Collection();
 
 const commandFiles = fs
