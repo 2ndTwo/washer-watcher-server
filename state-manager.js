@@ -16,11 +16,6 @@ function initState() {
     let usersState = {};
 
     for (const user of config.users) {
-      console.log(
-        moment
-          .duration(config.default_reminder_duration, "minutes")
-          .asMilliseconds()
-      );
       usersState[user.name] = {
         washer_durations: [], // In ms
         dryer_durations: [], // In ms
@@ -28,7 +23,7 @@ function initState() {
         // Saved as ms instead of minutes for consistency with other time values
         reminder_duration: moment
           .duration(config.default_reminder_duration, "minutes")
-          .milliseconds(),
+          .asMilliseconds(),
       };
     }
 
