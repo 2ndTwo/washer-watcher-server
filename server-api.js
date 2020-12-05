@@ -52,6 +52,19 @@ router.use("/:machine/:action", (req, res) => {
   switch (action) {
     case "user":
       if (user === undefined) {
+        if (!req.is("application/x-www-form-urlencoded")) {
+          res.set("Allow", "application/x-www-form-urlencoded");
+          res
+            .status(415)
+            .send(
+              createError(
+                415,
+                `Invalid content type (${req.headers["content-type"]}), only 'application/x-www-form-urlencoded' is supported. Make sure the 'Content-Type' header is 'application/x-www-form-urlencoded'.`
+              )
+            );
+          return;
+        }
+
         res
           .status(406)
           .send(
