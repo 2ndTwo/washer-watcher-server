@@ -25,8 +25,7 @@ function cycleFinishedMessage(discordClient, machine, userId, userName) {
     .fetch(userId)
     .then((user) => user.send(message))
     .catch((err) => {
-      logError(`Error telling user (${userName}) their load finished:`);
-      logError(err);
+      logError(`Error telling user (${userName}) their load finished:\n` + err);
     });
 }
 
