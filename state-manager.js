@@ -2,6 +2,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 const { logInfo, logError } = require("./utilities");
+const { cycleFinishedMessage } = require("./discord-api");
 
 const config = require("./config.json");
 
@@ -79,14 +80,24 @@ function changeMachineStatus(machine, status) {
   if (!["dryer", "washer"].includes(machine)) return -1;
   if (!["empty", "running", "full"].includes(status)) return -2;
 
+  // If the machine has finished its cycle
+  if (
+    state[machine].status === "running" &&
+    status === "full" &&
+    state[machine].user !== null
+  ) {
+    const userName = state[machine].user;
+    const userId = config.users.find((user) => user.name === userName)
+      .discord_id;
+    cycleFinishedMessage(getDiscordClient(), machine, userId, userName);
+  }
+
   state[machine].status = status;
   saveState(state);
 
-  if (["full", "empty"].includes(status)) {
-  }
-
   return 0;
 }
+
 function changeMachineUser(machine, userName) {
   if (!["dryer", "washer"].includes(machine)) return -1;
   if (config.users.find((user) => user.name === userName) === undefined)
