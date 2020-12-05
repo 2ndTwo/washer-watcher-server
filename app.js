@@ -1,12 +1,53 @@
 const fs = require("fs");
 const Discord = require("discord.js");
 const express = require("express");
+const moment = require("moment");
 
 const discordApi = require("./discord-api");
 const router = require("./server-api");
-const { logInfo, logError } = require("./utilities");
+const { logInfo, logError, saveState, loadState } = require("./utilities");
 
 const config = require("./config.json");
+
+/* Set up save data */
+
+let state = {};
+
+if (fs.existsSync("./state.json")) {
+  state = loadState();
+} else {
+  let usersState = {};
+
+  for (const user of config.users) {
+    usersState[user.name] = {
+      washer_durations: [], // In ms
+      dryer_durations: [], // In ms
+      reminder_active: true,
+      // Saved as ms instead of minutes for consistency with other time values
+      reminder_duration: moment
+        .duration(config.default_reminder_duration, "minutes")
+        .milliseconds(),
+    };
+  }
+
+  state = {
+    version: 1,
+    washer: {
+      started: null, // epoch ms when load started
+      status: "empty",
+      user: null,
+      queue: [],
+    },
+    dryer: {
+      started: null, // epoch ms when load started
+      status: "empty",
+      user: null,
+    },
+    users: usersState,
+  };
+
+  saveState(state);
+}
 
 /* Set up Discord bot */
 

@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 const config = require("./config.json");
 
 function sendAdminMessage(message, discordClient) {
@@ -31,7 +33,23 @@ function logError(message, discordClient) {
   }
 }
 
+function saveState(data) {
+  fs.writeFile("./state.json", JSON.stringify(data), (err) => {
+    if (err) {
+      logError("Issue saving state.json:\n" + err);
+      logInfo("Current state data:\n" + data);
+    }
+  });
+}
+
+function loadState() {
+  const rawStateFileData = fs.readFileSync("./state.json");
+  return JSON.parse(rawStateFileData);
+}
+
 module.exports = {
   logInfo,
   logError,
+  saveState,
+  loadState,
 };
