@@ -53,9 +53,6 @@ function saveState(data) {
       logInfo("Current state data:\n" + data);
     }
   });
-
-  console.log("The state has been saved:\n");
-  console.log(data);
 }
 function loadState() {
   const rawStateFileData = fs.readFileSync("./state.json");
