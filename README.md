@@ -12,15 +12,10 @@ Use the [yarn](https://classic.yarnpkg.com/en/docs/install) package manager to i
 yarn init
 ```
 
-Create a `config.json` file in the root of the project. You can use the included `config-example.json` as a guide.
-
 Create a Discord bot and invite it to a server. Explaining how to do this is beyond the scope of this README, but [this](https://discordpy.readthedocs.io/en/latest/discord.html) is a great guide.
 
-Create a `.env` file and include the following line, replacing `YOUR_BOT_TOKEN` with... your bot's token:
+Create a `config.json` file in the root of the project. You can use the included `config-example.json` as a guide.
 
-```dotenv
-DISCORD_BOT_TOKEN=YOUR_BOT_TOKEN
-```
 
 ## Usage
 

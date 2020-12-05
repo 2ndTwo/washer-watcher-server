@@ -1,4 +1,3 @@
-require("dotenv").config();
 const config = require("./config.json");
 const discordApi = require("./discord-api");
 const serverApi = require("./server-api");
@@ -10,7 +9,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 
 client.once("ready", () => {
-  logInfo("Discord bot is up!", client);
+  console.info("Discord bot is up!");
 });
 
 console.log(discordApi);
@@ -19,7 +18,7 @@ client.on("message", (message) => {
   discordApi.onMessage(client, message);
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(config.discord_bot_token);
 
 /* Set up API server */
 
@@ -32,5 +31,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`API server ready at http://localhost:${port}`);
+  console.info(`API server ready at http://localhost:${port}`);
 });
