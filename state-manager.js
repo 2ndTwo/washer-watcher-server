@@ -2,6 +2,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 const { logInfo, logError } = require("./utilities");
+
 const config = require("./config.json");
 
 function initState() {
@@ -47,6 +48,10 @@ function initState() {
 }
 
 function saveState(data) {
+  if (Object.prototype.hasOwnProperty.call(data, "discord_client")) {
+    delete data.discord_client;
+  }
+
   fs.writeFile("./state.json", JSON.stringify(data), (err) => {
     if (err) {
       logError("Issue saving state.json:\n" + err);
@@ -63,12 +68,22 @@ function getState() {
   return state;
 }
 
+function addDiscordClient(client) {
+  state.discord_client = client;
+}
+function getDiscordClient() {
+  return state.discord_client;
+}
+
 function changeMachineStatus(machine, status) {
   if (!["dryer", "washer"].includes(machine)) return -1;
   if (!["empty", "running", "full"].includes(status)) return -2;
 
   state[machine].status = status;
   saveState(state);
+
+  if (["full", "empty"].includes(status)) {
+  }
 
   return 0;
 }
@@ -87,6 +102,8 @@ let state = initState();
 
 module.exports = {
   getState,
+  addDiscordClient,
+  getDiscordClient,
   changeMachineStatus,
   changeMachineUser,
 };

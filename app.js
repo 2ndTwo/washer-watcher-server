@@ -4,12 +4,14 @@ const express = require("express");
 
 const discordApi = require("./discord-api");
 const router = require("./server-api");
+const state = require("./state-manager");
 
 const config = require("./config.json");
 
 /* Set up Discord bot */
 
 const client = new Discord.Client();
+state.addDiscordClient(client);
 client.commands = new Discord.Collection();
 
 const commandFiles = fs
