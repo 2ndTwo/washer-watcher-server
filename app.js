@@ -1,18 +1,30 @@
-const config = require("./config.json");
+const fs = require("fs");
+const Discord = require("discord.js");
+const express = require("express");
+
 const discordApi = require("./discord-api");
 const serverApi = require("./server-api");
 const { logInfo, logError } = require("./utilities");
 
+const config = require("./config.json");
+
 /* Set up Discord bot */
 
-const Discord = require("discord.js");
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs
+  .readdirSync("./bot-commands")
+  .filter((file) => file.endsWith(".js"));
+
+for (const file of commandFiles) {
+  const command = require(`./bot-commands/${file}`);
+  client.commands.set(command.name, command);
+}
 
 client.once("ready", () => {
   console.info("Discord bot is up!");
 });
-
-console.log(discordApi);
 
 client.on("message", (message) => {
   discordApi.onMessage(client, message);
@@ -22,7 +34,6 @@ client.login(config.discord_bot_token);
 
 /* Set up API server */
 
-const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {

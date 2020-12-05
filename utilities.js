@@ -4,8 +4,6 @@ function sendAdminMessage(message, discordClient) {
   const adminUser = config.users.find((user) => user.is_admin === true);
   const adminUserId = adminUser.discord_id;
 
-  console.log();
-
   discordClient.users
     // Fetch is used instead of cache.get because it's more reliable
     .fetch(adminUserId)
