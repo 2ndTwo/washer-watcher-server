@@ -72,7 +72,7 @@ function getState() {
 }
 
 function getMachineUser(machine) {
-  if (!["dryer", "washer"].includes(machine)) return null;
+  if (!["dryer", "washer"].includes(machine)) return undefined;
   return state[machine].user;
 }
 
