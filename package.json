@@ -2,14 +2,14 @@
   "name": "washer-watcher",
   "version": "1.0.0",
   "main": "app.js",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1"
-  },
-  "scripts": {
-    "start": "node app.js"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
