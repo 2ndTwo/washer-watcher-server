@@ -11,7 +11,7 @@ function onMessage(client, message) {
   try {
     client.commands.get(command).execute(message, args);
   } catch (error) {
-    logError(error);
+    logError(error, client);
     message.reply("There was an error trying to execute that command!");
   }
 }
