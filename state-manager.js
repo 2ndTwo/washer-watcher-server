@@ -71,6 +71,11 @@ function getState() {
   return state;
 }
 
+function getMachineUser(machine) {
+  if (!["dryer", "washer"].includes(machine)) return null;
+  return state[machine].user;
+}
+
 function addDiscordClient(client) {
   state.discord_client = client;
 }
@@ -120,6 +125,7 @@ let state = initState();
 
 module.exports = {
   getState,
+  getMachineUser,
   addDiscordClient,
   getDiscordClient,
   changeMachineStatus,

@@ -6,6 +6,24 @@ const state = require("./state-manager");
 
 let router = express.Router();
 
+router.get("/:machine/user", (req, res) => {
+  const machine = req.params.machine;
+
+  if (!["washer", "dryer"].includes(machine)) {
+    res
+      .status(406)
+      .send(
+        createError(
+          406,
+          `Invalid machine (${machine}), must be either 'washer' or 'dryer'`
+        )
+      );
+    return;
+  }
+
+  res.status(200).send(state.getMachineUser(machine));
+});
+
 router.use("/:machine/:action", (req, res) => {
   if (req.method !== "POST") {
     res.set("Allow", "POST");
@@ -135,6 +153,7 @@ router.use("/:machine/:action", (req, res) => {
 
   res.status(200).send();
 });
+
 router.use("/", (req, res) => {
   res.status(404).send(createError(404));
 });
