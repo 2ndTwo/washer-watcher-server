@@ -87,6 +87,17 @@ router.use("/:machine/:action", (req, res) => {
           );
         return;
       }
+      if (stateResult === -3) {
+        res
+          .status(406)
+          .send(
+            createError(
+              406,
+              "The user param variable cannot be set when the drum is empty."
+            )
+          );
+        return;
+      }
       break;
 
     case "start":

@@ -108,6 +108,7 @@ function changeMachineUser(machine, userName) {
   if (!["dryer", "washer"].includes(machine)) return -1;
   if (config.users.find((user) => user.name === userName) === undefined)
     return -2;
+  if (state[machine].status === "empty") return -3;
 
   state[machine].user = userName;
   saveState(state);
