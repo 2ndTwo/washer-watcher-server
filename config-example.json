@@ -1,6 +1,7 @@
 {
   "discord_bot_token": "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789101112131415161718192021",
   "api_port": 3000,
+  "default_reminder_duration": "1:00:00",
   "users": [
     {
       "name": "Sam",
