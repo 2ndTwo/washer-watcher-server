@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const express = require("express");
 
 const discordApi = require("./discord-api");
-const serverApi = require("./server-api");
+const router = require("./server-api");
 const { logInfo, logError } = require("./utilities");
 
 const config = require("./config.json");
@@ -36,9 +36,7 @@ client.login(config.discord_bot_token);
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(router);
 
 app.listen(config.api_port, () => {
   console.info(`API server ready at http://localhost:${config.api_port}`);
