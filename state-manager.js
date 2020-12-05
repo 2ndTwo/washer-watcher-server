@@ -95,6 +95,10 @@ function changeMachineStatus(machine, status) {
   }
 
   state[machine].status = status;
+  if (status === "empty") {
+    state[machine].user = null;
+  }
+
   saveState(state);
 
   return 0;
