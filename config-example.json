@@ -1,5 +1,6 @@
 {
   "discord_bot_token": "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789101112131415161718192021",
+  "api_port": 3000,
   "users": [
     {
       "name": "Sam",

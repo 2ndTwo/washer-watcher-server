@@ -24,12 +24,11 @@ client.login(config.discord_bot_token);
 
 const express = require("express");
 const app = express();
-const port = 3000;
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(port, () => {
-  console.info(`API server ready at http://localhost:${port}`);
+app.listen(config.api_port, () => {
+  console.info(`API server ready at http://localhost:${config.api_port}`);
 });
