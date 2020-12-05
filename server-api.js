@@ -6,7 +6,20 @@ const state = require("./state-manager");
 
 let router = express.Router();
 
-router.post("/:machine/:action", (req, res) => {
+router.use("/:machine/:action", (req, res) => {
+  if (req.method !== "POST") {
+    res.set("Allow", "POST");
+    res
+      .status(405)
+      .send(
+        createError(
+          405,
+          `Invalid method (${req.method}), only POST is supported`
+        )
+      );
+    return;
+  }
+
   const machine = req.params.machine;
   const action = req.params.action;
   const user = req.body.user; // May be undefined
