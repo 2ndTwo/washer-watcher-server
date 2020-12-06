@@ -17,8 +17,12 @@ function initState() {
 
     for (const user of config.users) {
       usersState[user.name] = {
-        washer_durations: [], // In ms
-        dryer_durations: [], // In ms
+        washer: {
+          durations: [], // In ms
+        },
+        dryer: {
+          durations: [], // In ms
+        },
         reminder_active: true,
         // Saved as ms instead of minutes for consistency with other time values
         reminder_duration: moment
@@ -90,22 +94,32 @@ function changeMachineStatus(machine, status) {
   if (!["dryer", "washer"].includes(machine)) return -1;
   if (!["empty", "running", "full"].includes(status)) return -2;
 
-  // If the machine has finished its cycle
-  if (
-    state[machine].status === "running" &&
-    status === "full" &&
-    state[machine].user !== null
-  ) {
-    const userName = state[machine].user;
-    const userId = config.users.find((user) => user.name === userName)
-      .discord_id;
-    cycleFinishedMessage(machine, userId, userName);
+  // If the machine has started its cycle
+  if (state[machine].status !== "running" && status === "running") {
+    state[machine].started = new Date().getTime();
   }
 
-  state[machine].status = status;
+  // If the machine has finished its cycle
+  if (state[machine].status === "running" && status !== "running") {
+    if (state[machine].user !== null) {
+      const endTime = new Date().getTime();
+      const userName = state[machine].user;
+      const userId = config.users.find((user) => user.name === userName)
+        .discord_id;
+      cycleFinishedMessage(machine, userId, userName);
+
+      const startTime = state[machine].started;
+      state.users[userName][machine].durations.push(endTime - startTime);
+    }
+
+    state[machine].started = null;
+  }
+
   if (status === "empty") {
     state[machine].user = null;
   }
+
+  state[machine].status = status;
 
   saveState(state);
 
