@@ -33,8 +33,25 @@ function cycleFinishedMessage(machine, userId, userName) {
     });
 }
 
+function reminderMessage(fullMachines, userId, userName) {
+  let message;
+  if (fullMachines.length === 1) {
+    message = `The ${fullMachines} is full with your laundry, don't forget to unload it!`;
+  } else {
+    message = `Both the ${fullMachines[0]} and ${fullMachines[1]} are full with your laundry, don't forget to unload them!`;
+  }
+
+  discordClient.users
+    .fetch(userId)
+    .then((user) => user.send(message))
+    .catch((err) => {
+      logError(`Error sending user (${userName}) reminder:\n` + err);
+    });
+}
+
 module.exports = {
   addDiscordClient,
   onMessage,
   cycleFinishedMessage,
+  reminderMessage,
 };

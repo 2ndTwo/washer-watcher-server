@@ -3,7 +3,7 @@ const moment = require("moment");
 const { cloneDeep } = require("lodash");
 
 const { logInfo, logError } = require("./utilities");
-const { cycleFinishedMessage } = require("./discord-api");
+const discord = require("./discord-api");
 
 const config = require("./config.json");
 
@@ -30,7 +30,9 @@ function initState() {
             .asMilliseconds(),
           // Saved as ms instead of minutes for consistency with other time values
           active: false,
-          number_sent: null,
+          last_sent: null, // In ms
+          number_sent: 0,
+          timeout: null,
         },
       };
     }
@@ -58,17 +60,34 @@ function initState() {
 }
 
 function saveState(data) {
-  const dataCopy = cloneDeep(data);
+  let dataCopy = cloneDeep(data);
   if (Object.prototype.hasOwnProperty.call(dataCopy, "discord_client")) {
     delete dataCopy.discord_client;
   }
 
-  fs.writeFile("./state.json", JSON.stringify(dataCopy), (err) => {
-    if (err) {
-      logError("Issue saving state.json:\n" + err);
-      logInfo("Current state data:\n" + dataCopy);
-    }
-  });
+  for (const userName of Object.keys(dataCopy.users)) {
+    dataCopy.users[userName].reminder.timeout = null;
+  }
+
+  if (!savingState) {
+    savingState = true;
+
+    fs.writeFile("./state.json", JSON.stringify(dataCopy), (err) => {
+      savingState = false;
+
+      if (err) {
+        logError("Issue saving state.json:\n" + err);
+        logInfo("Current state data:\n" + dataCopy);
+      }
+
+      if (waitingToSave) {
+        waitingToSave = false;
+        saveState(state);
+      }
+    });
+  } else {
+    waitingToSave = true;
+  }
 }
 function loadState() {
   const rawStateFileData = fs.readFileSync("./state.json");
@@ -77,6 +96,91 @@ function loadState() {
 
 function getState() {
   return state;
+}
+
+function resumeReminders() {
+  for (const userName in state.users) {
+    const userData = state.users[userName];
+    const reminder = userData.reminder;
+
+    if (!reminder.enabled || !reminder.active || reminder.number_sent >= 3)
+      continue;
+
+    if (state.washer.user !== userName && state.dryer.user !== userName)
+      continue;
+
+    scheduleReminder(userName);
+  }
+}
+
+function scheduleReminder(userName) {
+  const reminder = state.users[userName].reminder;
+
+  if (reminder.number_sent === null || reminder.number_sent < 3) {
+    if (reminder.number_sent === null) {
+      state.users[userName].reminder.number_sent = 0;
+    }
+
+    let nextReminderTime;
+    if (reminder.last_sent === null) {
+      nextReminderTime = reminder.reminder_duration;
+      state.users[userName].reminder.last_sent = new Date().getTime();
+    } else {
+      nextReminderTime =
+        reminder.reminder_duration -
+        (new Date().getTime() - reminder.last_sent);
+    }
+
+    state.users[userName].reminder.active = true;
+
+    state.users[userName].reminder.timeout = setTimeout(() => {
+      const reminder = state.users[userName].reminder;
+
+      if (
+        !reminder.enabled ||
+        !reminder.active ||
+        (state.washer.user !== userName && state.dryer.user !== userName) ||
+        (state.washer.status !== "full" && state.dryer.status !== "full")
+      ) {
+        cancelReminder(userName);
+        return;
+      }
+
+      state.users[userName].reminder.number_sent++;
+      saveState(state);
+
+      let fullMachines = [];
+      if (state.washer.user === userName && state.washer.status === "full") {
+        fullMachines.push("washer");
+      }
+      if (state.dryer.user === userName && state.dryer.status === "full") {
+        fullMachines.push("dryer");
+      }
+
+      const userDiscordId = config.users.find((user) => user.name === userName)
+        .discord_id;
+      discord.reminderMessage(fullMachines, userDiscordId, userName);
+
+      state.users[userName].reminder.last_sent = new Date().getTime();
+      scheduleReminder(userName);
+    }, nextReminderTime);
+
+    saveState(state);
+  } else {
+    cancelReminder(userName);
+  }
+}
+
+function cancelReminder(userName) {
+  const timeout = state.users[userName].reminder.timeout;
+  if (timeout !== null) clearTimeout(timeout);
+
+  state.users[userName].reminder.active = false;
+  state.users[userName].reminder.last_sent = null;
+  state.users[userName].reminder.number_sent = null;
+  state.users[userName].reminder.timeout = null;
+
+  saveState(state);
 }
 
 function getUserNameFromId(discordId) {
@@ -110,7 +214,12 @@ function changeMachineStatus(machine, status) {
       const userName = state[machine].user;
       const userId = config.users.find((user) => user.name === userName)
         .discord_id;
-      cycleFinishedMessage(machine, userId, userName);
+
+      discord.cycleFinishedMessage(machine, userId, userName);
+
+      if (!state.users[userName].reminder.active) {
+        scheduleReminder(userName);
+      }
 
       const startTime = state[machine].started;
       state.users[userName][machine].durations.push(endTime - startTime);
@@ -120,7 +229,19 @@ function changeMachineStatus(machine, status) {
   }
 
   if (status === "empty") {
-    state[machine].user = null;
+    const userName = state[machine].user;
+
+    if (userName !== null) {
+      state[machine].user = null;
+
+      const otherMachine = machine === "washer" ? "dryer" : "washer";
+      if (
+        state[otherMachine].status !== "full" ||
+        state[otherMachine].user !== userName
+      ) {
+        cancelReminder(userName);
+      }
+    }
   }
 
   state[machine].status = status;
@@ -142,10 +263,13 @@ function changeMachineUser(machine, userName) {
   return 0;
 }
 
+let savingState = false;
+let waitingToSave = false;
 let state = initState();
 
 module.exports = {
   getState,
+  resumeReminders,
   getUserNameFromId,
   getMachineUser,
   getMachineStatus,

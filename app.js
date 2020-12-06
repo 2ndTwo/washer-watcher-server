@@ -2,6 +2,7 @@ const fs = require("fs");
 const Discord = require("discord.js");
 const express = require("express");
 
+const state = require("./state-manager");
 const utilities = require("./utilities");
 const discordApi = require("./discord-api");
 const router = require("./server-api");
@@ -26,6 +27,7 @@ for (const file of commandFiles) {
 
 client.once("ready", () => {
   console.info("Discord bot is up!");
+  state.resumeReminders();
 });
 
 client.on("message", (message) => {
