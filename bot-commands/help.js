@@ -5,7 +5,11 @@ module.exports = {
     message.author.send(
       "I'm the laundry bot! I keep you up-to-date on the latest laundry-related news.\n" +
         "\n" +
-        "`help` - Shows this helpful message.\n"
+        "`help` - Show this helpful message.\n" +
+        "\n" +
+        "`status` - Show the status of both the washer and dryer\n" +
+        "`status washer` - Show the status of just the washer\n" +
+        "`status dryer` - Show the status of just the dryer\n"
     );
   },
 };
