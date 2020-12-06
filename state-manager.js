@@ -71,9 +71,19 @@ function getState() {
   return state;
 }
 
+function getUserNameFromId(discordId) {
+  const user = config.users.find((user) => user.discord_id === discordId);
+  return user.name;
+}
+
 function getMachineUser(machine) {
   if (!["dryer", "washer"].includes(machine)) return undefined;
   return state[machine].user;
+}
+
+function getMachineStatus(machine) {
+  if (!["dryer", "washer"].includes(machine)) return undefined;
+  return state[machine].status;
 }
 
 function changeMachineStatus(machine, status) {
@@ -118,7 +128,9 @@ let state = initState();
 
 module.exports = {
   getState,
+  getUserNameFromId,
   getMachineUser,
+  getMachineStatus,
   changeMachineStatus,
   changeMachineUser,
 };

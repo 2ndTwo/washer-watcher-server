@@ -32,8 +32,13 @@ function logError(message) {
   sendAdminMessage("🛑 " + message);
 }
 
+function lowerFirstLetter(str) {
+  return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
 module.exports = {
+  addDiscordClient,
   logInfo,
   logError,
-  addDiscordClient,
+  lowerFirstLetter,
 };
