@@ -23,11 +23,15 @@ function initState() {
         dryer: {
           durations: [], // In ms
         },
-        reminder_active: true,
-        // Saved as ms instead of minutes for consistency with other time values
-        reminder_duration: moment
-          .duration(config.default_reminder_duration, "minutes")
-          .asMilliseconds(),
+        reminder: {
+          enabled: true,
+          reminder_duration: moment
+            .duration(config.default_reminder_duration, "minutes")
+            .asMilliseconds(),
+          // Saved as ms instead of minutes for consistency with other time values
+          active: false,
+          number_sent: null,
+        },
       };
     }
 
