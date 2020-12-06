@@ -5,14 +5,13 @@ const express = require("express");
 const utilities = require("./utilities");
 const discordApi = require("./discord-api");
 const router = require("./server-api");
-const state = require("./state-manager");
 
 const config = require("./config.json");
 
 /* Set up Discord bot */
 
 const client = new Discord.Client();
-state.addDiscordClient(client);
+discordApi.addDiscordClient(client);
 utilities.addDiscordClient(client);
 client.commands = new Discord.Collection();
 
@@ -30,7 +29,7 @@ client.once("ready", () => {
 });
 
 client.on("message", (message) => {
-  discordApi.onMessage(client, message);
+  discordApi.onMessage(message);
 });
 
 client.login(config.discord_bot_token);

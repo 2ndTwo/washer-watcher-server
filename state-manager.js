@@ -76,13 +76,6 @@ function getMachineUser(machine) {
   return state[machine].user;
 }
 
-function addDiscordClient(client) {
-  state.discord_client = client;
-}
-function getDiscordClient() {
-  return state.discord_client;
-}
-
 function changeMachineStatus(machine, status) {
   if (!["dryer", "washer"].includes(machine)) return -1;
   if (!["empty", "running", "full"].includes(status)) return -2;
@@ -96,7 +89,7 @@ function changeMachineStatus(machine, status) {
     const userName = state[machine].user;
     const userId = config.users.find((user) => user.name === userName)
       .discord_id;
-    cycleFinishedMessage(getDiscordClient(), machine, userId, userName);
+    cycleFinishedMessage(machine, userId, userName);
   }
 
   state[machine].status = status;
@@ -126,8 +119,6 @@ let state = initState();
 module.exports = {
   getState,
   getMachineUser,
-  addDiscordClient,
-  getDiscordClient,
   changeMachineStatus,
   changeMachineUser,
 };
