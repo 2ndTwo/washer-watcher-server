@@ -23,7 +23,12 @@ function onMessage(message) {
 }
 
 function cycleFinishedMessage(machine, userId, userName) {
-  const message = `Your ${machine} load has finished!`;
+  let message = `Your ${machine} load has finished!`;
+
+  if (machine === "washer") {
+    message +=
+      "\nDon't forget to leave the washer's door open (to let it dry out) and if you're putting your laundry in the dryer make sure to clean the lint trap first.";
+  }
 
   discordClient.users
     .fetch(userId)
