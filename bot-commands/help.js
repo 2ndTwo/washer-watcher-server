@@ -9,7 +9,10 @@ module.exports = {
         "\n" +
         "`status` - Show the status of both the washer and dryer\n" +
         "`status washer` - Show the status of just the washer\n" +
-        "`status dryer` - Show the status of just the dryer\n"
+        "`status dryer` - Show the status of just the dryer\n" +
+        "\n" +
+        "`empty washer` - Mark the washer as empty\n" +
+        "`empty dryer` - Mark the dryer as empty\n"
     );
   },
 };
