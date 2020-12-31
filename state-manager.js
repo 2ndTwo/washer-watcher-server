@@ -248,6 +248,8 @@ function changeMachineStatus(machine, status) {
 
   saveState(state);
 
+  updateDiscordStatus();
+
   return 0;
 }
 
@@ -263,6 +265,13 @@ function changeMachineUser(machine, userName) {
   return 0;
 }
 
+function updateDiscordStatus() {
+  discord.updateStatus({
+    washer: state["washer"].status,
+    dryer: state["dryer"].status,
+  });
+}
+
 let savingState = false;
 let waitingToSave = false;
 let state = initState();
@@ -275,4 +284,5 @@ module.exports = {
   getMachineStatus,
   changeMachineStatus,
   changeMachineUser,
+  updateDiscordStatus,
 };

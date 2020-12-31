@@ -54,9 +54,49 @@ function reminderMessage(fullMachines, userId, userName) {
     });
 }
 
+function updateStatus(machineStatuses) {
+  if (machineStatuses.washer === "empty" && machineStatuses.dryer === "empty") {
+    discordClient.user.setActivity("");
+    return;
+  }
+
+  let activityMessage = "";
+  let activityType = "";
+
+  if (machineStatuses.washer !== "empty") {
+    activityMessage = `${machineStatuses.washer} washer`;
+
+    if (machineStatuses.washer === "running") {
+      activityType = "LISTENING";
+    } else if (machineStatuses.washer === "full") {
+      activityType = "WATCHING";
+    }
+  }
+  if (machineStatuses.dryer !== "empty") {
+    if (machineStatuses.washer !== "empty") {
+      activityMessage += " and ";
+    }
+    activityMessage += `${machineStatuses.dryer} dryer`;
+
+    if (activityType === "") {
+      // The washer's status should have priority over the activity type so the
+      // bot's status makes the most grammatical sense
+
+      if (machineStatuses.dryer === "running") {
+        activityType = "LISTENING";
+      } else if (machineStatuses.dryer === "full") {
+        activityType = "WATCHING";
+      }
+    }
+  }
+
+  discordClient.user.setActivity(activityMessage, { type: activityType });
+}
+
 module.exports = {
   addDiscordClient,
   onMessage,
   cycleFinishedMessage,
   reminderMessage,
+  updateStatus,
 };

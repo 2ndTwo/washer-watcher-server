@@ -28,6 +28,7 @@ for (const file of commandFiles) {
 client.once("ready", () => {
   console.info("Discord bot is up!");
   state.resumeReminders();
+  state.updateDiscordStatus();
 });
 
 client.on("message", (message) => {
